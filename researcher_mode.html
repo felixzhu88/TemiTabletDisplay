@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Control Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f2eb;
+    --surface: #ffffff;
+    --border: #d8d2c4;
+    --text: #1a1a18;
+    --muted: #888078;
+    --accent: #1a1a18;
+    --accent-hover: #333;
+    --danger: #c0392b;
+    --success: #27795a;
+    --gold: #b8a060;
+  }
+
+  html, body {
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+  }
+
+  body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 48px 24px;
+  }
+
+  .panel {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .header {
+    margin-bottom: 36px;
+  }
+
+  .header .label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px;
+    margin-bottom: 16px;
+  }
+
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 120px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    padding: 14px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  textarea:focus {
+    border-color: var(--accent);
+  }
+
+  textarea::placeholder { color: var(--muted); }
+
+  .char-count {
+    text-align: right;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* Timer controls */
+  .timer-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .timer-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .timer-toggle input[type="checkbox"] {
+    appearance: none;
+    width: 36px;
+    height: 20px;
+    background: var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.25s;
+  }
+
+  .timer-toggle input[type="checkbox"]::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.25s;
+  }
+
+  .timer-toggle input[type="checkbox"]:checked {
+    background: var(--accent);
+  }
+
+  .timer-toggle input[type="checkbox"]:checked::after {
+    transform: translateX(16px);
+  }
+
+  .timer-toggle span {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .timer-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.3;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+
+  .timer-input-group.enabled {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .duration-presets {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .preset-btn {
+    padding: 5px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    background: transparent;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .preset-btn:hover, .preset-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--bg);
+  }
+
+  .custom-duration {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .custom-duration input[type="number"] {
+    width: 70px;
+    padding: 6px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .custom-duration input[type="number"]:focus {
+    border-color: var(--accent);
+  }
+
+  .custom-duration span {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* Action buttons */
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .btn-display {
+    flex: 1;
+    padding: 14px 24px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .btn-display:hover { background: var(--accent-hover); }
+  .btn-display:active { transform: scale(0.98); }
+
+  .btn-display:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-clear {
+    padding: 14px 20px;
+    background: transparent;
+    color: var(--danger);
+    border: 1.5px solid var(--danger);
+    border-radius: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    opacity: 0.6;
+  }
+
+  .btn-clear:hover { opacity: 1; background: #fff0ef; }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+
+  .status-dot.sent { background: var(--success); }
+  .status-dot.error { background: var(--danger); }
+  .status-dot.live { background: var(--gold); box-shadow: 0 0 5px #b8a06066; }
+
+  #status-msg { transition: color 0.3s; }
+
+  .preview-box {
+    margin-top: 12px;
+    padding: 16px;
+    background: var(--bg);
+    border: 1px dashed var(--border);
+    border-radius: 7px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    min-height: 48px;
+  }
+
+  .preview-box.has-content { color: var(--text); }
+  .preview-empty { color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="panel">
+  <div class="header">
+    <div class="label">Research Tool</div>
+    <h1>Display Control</h1>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Message</div>
+    <textarea id="msg-input" placeholder="Type the message to display on the tablet…" maxlength="400"></textarea>
+    <div class="char-count"><span id="char-count">0</span> / 400</div>
+
+    <div class="preview-box" id="preview">
+      <span class="preview-empty">Preview will appear here</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Timer</div>
+    <div class="timer-row">
+      <label class="timer-toggle">
+        <input type="checkbox" id="timer-toggle">
+        <span>Auto-clear after duration</span>
+      </label>
+    </div>
+
+    <div class="timer-input-group" id="timer-input-group" style="margin-top: 16px; flex-direction: column; align-items: flex-start; gap: 10px;">
+      <div class="duration-presets">
+        <button class="preset-btn" data-val="10">10s</button>
+        <button class="preset-btn" data-val="30">30s</button>
+        <button class="preset-btn" data-val="60">1m</button>
+        <button class="preset-btn" data-val="120">2m</button>
+        <button class="preset-btn" data-val="300">5m</button>
+      </div>
+      <div class="custom-duration">
+        <input type="number" id="duration-input" min="1" max="3600" placeholder="—">
+        <span>seconds custom</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-display" id="btn-display" disabled>▶ Display on Tablet</button>
+    <button class="btn-clear" id="btn-clear">✕ Clear</button>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot live" id="status-dot"></div>
+    <span id="status-msg">Connected — ready to send</span>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { FIREBASE_CONFIG } from "./firebase-config.js";
+
+  const app = initializeApp(FIREBASE_CONFIG);
+  const db = getDatabase(app);
+
+  const msgInput = document.getElementById('msg-input');
+  const charCount = document.getElementById('char-count');
+  const preview = document.getElementById('preview');
+  const timerToggle = document.getElementById('timer-toggle');
+  const timerGroup = document.getElementById('timer-input-group');
+  const durationInput = document.getElementById('duration-input');
+  const btnDisplay = document.getElementById('btn-display');
+  const btnClear = document.getElementById('btn-clear');
+  const statusDot = document.getElementById('status-dot');
+  const statusMsg = document.getElementById('status-msg');
+  const presets = document.querySelectorAll('.preset-btn');
+
+  let selectedDuration = null;
+
+  // Message input
+  msgInput.addEventListener('input', () => {
+    const val = msgInput.value;
+    charCount.textContent = val.length;
+
+    if (val.trim()) {
+      preview.innerHTML = '';
+      preview.classList.add('has-content');
+      preview.textContent = val;
+    } else {
+      preview.innerHTML = '<span class="preview-empty">Preview will appear here</span>';
+      preview.classList.remove('has-content');
+    }
+
+    btnDisplay.disabled = !val.trim();
+  });
+
+  // Timer toggle
+  timerToggle.addEventListener('change', () => {
+    timerGroup.classList.toggle('enabled', timerToggle.checked);
+    if (!timerToggle.checked) {
+      selectedDuration = null;
+      durationInput.value = '';
+      presets.forEach(p => p.classList.remove('active'));
+    }
+  });
+
+  // Presets
+  presets.forEach(btn => {
+    btn.addEventListener('click', () => {
+      presets.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      selectedDuration = parseInt(btn.dataset.val);
+      durationInput.value = selectedDuration;
+    });
+  });
+
+  // Custom duration
+  durationInput.addEventListener('input', () => {
+    const val = parseInt(durationInput.value);
+    if (val > 0) {
+      selectedDuration = val;
+      presets.forEach(p => p.classList.remove('active'));
+    }
+  });
+
+  // Display button
+  btnDisplay.addEventListener('click', async () => {
+    const message = msgInput.value.trim();
+    if (!message) return;
+
+    const duration = timerToggle.checked ? selectedDuration : null;
+
+    btnDisplay.disabled = true;
+    btnDisplay.textContent = 'Sending…';
+    setStatus('sending', 'Sending to tablet…');
+
+    try {
+      await set(ref(db, 'currentMessage'), {
+        message,
+        duration: duration || 0,
+        timestamp: Date.now()
+      });
+      setStatus('sent', `Sent${duration ? ` — clears in ${duration}s` : ' — manual clear needed'}`);
+      btnDisplay.textContent = '✓ Displayed';
+      setTimeout(() => {
+        btnDisplay.textContent = '▶ Display on Tablet';
+        btnDisplay.disabled = false;
+      }, 2000);
+    } catch (e) {
+      setStatus('error', 'Failed to send — check connection');
+      btnDisplay.textContent = '▶ Display on Tablet';
+      btnDisplay.disabled = false;
+    }
+  });
+
+  // Clear button
+  btnClear.addEventListener('click', async () => {
+    try {
+      await set(ref(db, 'currentMessage'), null);
+      setStatus('sent', 'Tablet cleared');
+      setTimeout(() => setStatus('live', 'Connected — ready to send'), 2000);
+    } catch(e) {
+      setStatus('error', 'Failed to clear');
+    }
+  });
+
+  function setStatus(type, msg) {
+    statusMsg.textContent = msg;
+    statusDot.className = 'status-dot';
+    if (type === 'sent') statusDot.classList.add('sent');
+    else if (type === 'error') statusDot.classList.add('error');
+    else if (type === 'live') statusDot.classList.add('live');
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Display</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --text: #f0ece3;
+    --accent: #c8b47a;
+    --muted: #444;
+    --dim: #888;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow: hidden;
+  }
+
+  #display {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    position: relative;
+    transition: opacity 0.6s ease;
+  }
+
+  /* Subtle grid background */
+  #display::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--muted) 1px, transparent 1px),
+      linear-gradient(90deg, var(--muted) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.06;
+    pointer-events: none;
+  }
+
+  #idle-state {
+    text-align: center;
+    opacity: 0.25;
+  }
+
+  #idle-state .idle-icon {
+    font-size: 48px;
+    margin-bottom: 20px;
+    filter: grayscale(1);
+  }
+
+  #idle-state p {
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  #message-state {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    max-width: 900px;
+    gap: 48px;
+  }
+
+  #message-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 5vw, 64px);
+    line-height: 1.35;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  #message-text.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  #timer-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    opacity: 0;
+    transition: opacity 0.5s ease 0.3s;
+  }
+
+  #timer-wrap.visible { opacity: 1; }
+
+  #timer-bar-track {
+    width: 240px;
+    height: 2px;
+    background: var(--muted);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  #timer-bar {
+    height: 100%;
+    background: var(--accent);
+    width: 100%;
+    transform-origin: left;
+    transition: transform linear;
+  }
+
+  #timer-label {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  /* Corner status dot */
+  #status-dot {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  #dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: background 0.4s;
+  }
+
+  #dot.live { background: #5cba78; box-shadow: 0 0 6px #5cba7888; }
+  #dot.active { background: var(--accent); box-shadow: 0 0 8px #c8b47a66; animation: pulse 1.2s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+</style>
+</head>
+<body>
+
+<div id="display">
+  <div id="idle-state">
+    <div class="idle-icon">◎</div>
+    <p>Awaiting message</p>
+  </div>
+
+  <div id="message-state">
+    <div id="message-text"></div>
+    <div id="timer-wrap">
+      <div id="timer-bar-track"><div id="timer-bar"></div></div>
+      <div id="timer-label" id="timer-label">—</div>
+    </div>
+  </div>
+</div>
+
+<div id="status-dot">
+  <div id="dot"></div>
+  <span id="status-text">connecting</span>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { FIREBASE_CONFIG } from "./firebase-config.js";
+
+  const app = initializeApp(FIREBASE_CONFIG);
+  const db = getDatabase(app);
+
+  const dot = document.getElementById('dot');
+  const statusText = document.getElementById('status-text');
+  const idleState = document.getElementById('idle-state');
+  const messageState = document.getElementById('message-state');
+  const messageText = document.getElementById('message-text');
+  const timerBar = document.getElementById('timer-bar');
+  const timerLabel = document.getElementById('timer-label');
+  const timerWrap = document.getElementById('timer-wrap');
+
+  let clearTimer = null;
+
+  dot.classList.add('live');
+  statusText.textContent = 'live';
+
+  const msgRef = ref(db, 'currentMessage');
+  onValue(msgRef, (snapshot) => {
+    const data = snapshot.val();
+    if (!data || !data.message) {
+      showIdle();
+      return;
+    }
+    showMessage(data.message, data.duration, data.timestamp);
+  });
+
+  function showIdle() {
+    if (clearTimer) clearTimeout(clearTimer);
+    messageState.style.display = 'none';
+    messageText.classList.remove('visible');
+    timerWrap.classList.remove('visible');
+    idleState.style.display = 'block';
+    dot.classList.remove('active');
+    dot.classList.add('live');
+    statusText.textContent = 'live';
+  }
+
+  function showMessage(text, duration, timestamp) {
+    if (clearTimer) clearTimeout(clearTimer);
+
+    idleState.style.display = 'none';
+    messageState.style.display = 'flex';
+    messageText.textContent = text;
+
+    dot.classList.remove('live');
+    dot.classList.add('active');
+    statusText.textContent = 'displaying';
+
+    // Animate in
+    requestAnimationFrame(() => {
+      messageText.classList.add('visible');
+      timerWrap.classList.add('visible');
+    });
+
+    if (duration && duration > 0) {
+      // Calculate remaining time based on server timestamp
+      const elapsed = timestamp ? (Date.now() - timestamp) / 1000 : 0;
+      const remaining = Math.max(0, duration - elapsed);
+
+      timerLabel.textContent = `${Math.ceil(remaining)}s remaining`;
+
+      timerBar.style.transition = 'none';
+      timerBar.style.transform = `scaleX(${remaining / duration})`;
+
+      requestAnimationFrame(() => {
+        timerBar.style.transition = `transform ${remaining}s linear`;
+        timerBar.style.transform = 'scaleX(0)';
+      });
+
+      let secondsLeft = Math.ceil(remaining);
+      const labelInterval = setInterval(() => {
+        secondsLeft--;
+        if (secondsLeft <= 0) {
+          clearInterval(labelInterval);
+          timerLabel.textContent = 'done';
+        } else {
+          timerLabel.textContent = `${secondsLeft}s remaining`;
+        }
+      }, 1000);
+
+      clearTimer = setTimeout(() => {
+        clearInterval(labelInterval);
+        showIdle();
+      }, remaining * 1000);
+    } else {
+      timerWrap.style.display = 'none';
+    }
+  }
+</script>
+</body>
+</html>
