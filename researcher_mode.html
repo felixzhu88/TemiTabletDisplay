@@ -156,13 +156,15 @@
   }
 
   .timer-input-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    opacity: 0.3;
-    pointer-events: none;
-    transition: opacity 0.25s;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 16px;
+  opacity: 0.3;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
 
   .timer-input-group.enabled {
     opacity: 1;
@@ -342,7 +344,7 @@
       </label>
     </div>
 
-    <div class="timer-input-group" id="timer-input-group" style="margin-top: 16px; flex-direction: column; align-items: flex-start; gap: 10px;">
+    <div class="timer-input-group" id="timer-input-group">
       <div class="duration-presets">
         <button class="preset-btn" data-val="10">10s</button>
         <button class="preset-btn" data-val="30">30s</button>
@@ -376,6 +378,7 @@
   const app = initializeApp({
     apiKey: "AIzaSyDh0Azzq5cCUJIREWGn8Uky0wpjAn_hF4Y",
     authDomain: "temi-tablet-display.firebaseapp.com",
+    databaseURL: "https://temi-tablet-display-default-rtdb.firebaseio.com/",
     projectId: "temi-tablet-display",
     storageBucket: "temi-tablet-display.firebasestorage.app",
     messagingSenderId: "200677882490",
