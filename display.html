@@ -209,6 +209,22 @@
 
   let clearTimer = null;
 
+  // load voices (needed on some Android devices)
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+
+  function speak(text) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v => v.name.includes('Google') && v.lang.startsWith('en'));
+    if (preferred) utterance.voice = preferred;
+    utterance.rate = 0.95;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+    window.speechSynthesis.speak(utterance);
+  }
+
   dot.classList.add('live');
   statusText.textContent = 'live';
 
@@ -224,6 +240,7 @@
 
   function showIdle() {
     if (clearTimer) clearTimeout(clearTimer);
+    window.speechSynthesis.cancel(); // cancel TTS
     messageState.style.display = 'none';
     messageText.classList.remove('visible');
     timerWrap.classList.remove('visible');
@@ -239,6 +256,8 @@
     idleState.style.display = 'none';
     messageState.style.display = 'flex';
     messageText.textContent = text;
+
+    speak(text); // call text to speech
 
     dot.classList.remove('live');
     dot.classList.add('active');
