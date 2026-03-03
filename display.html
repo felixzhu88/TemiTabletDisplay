@@ -280,20 +280,21 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    const firebaseConfig = initializeApp({
-        apiKey: "AIzaSyDh0Azzq5cCUJIREWGn8Uky0wpjAn_hF4Y",
-        authDomain: "temi-tablet-display.firebaseapp.com",
-        databaseURL: "https://temi-tablet-display-default-rtdb.firebaseio.com/",
-        projectId: "temi-tablet-display",
-        storageBucket: "temi-tablet-display.firebasestorage.app",
-        messagingSenderId: "200677882490",
-        appId: "1:200677882490:web:e08c52af15ced7ec64d9c3",
-        measurementId: "G-YVJTF25Z9P"
-    });
+    const firebaseConfig = {
+      apiKey: "AIzaSyDh0Azzq5cCUJIREWGn8Uky0wpjAn_hF4Y",
+      authDomain: "temi-tablet-display.firebaseapp.com",
+      databaseURL: "https://temi-tablet-display-default-rtdb.firebaseio.com/",
+      projectId: "temi-tablet-display",
+      storageBucket: "temi-tablet-display.firebasestorage.app",
+      messagingSenderId: "200677882490",
+      appId: "1:200677882490:web:e08c52af15ced7ec64d9c3"
+    };
 
-    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const tabletRef = ref(db, 'tablet/currentScreen');
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+
+    const db = firebase.database();
+    const tabletRef = db.ref('tablet/currentScreen');
+
 
     const allScreens = ['screen1', 'screen2'];
 
