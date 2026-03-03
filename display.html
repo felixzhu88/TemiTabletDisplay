@@ -1,308 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Study Display</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tablet</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap');
 
-  :root {
-    --bg: #0f0f0f;
-    --surface: #1a1a1a;
-    --text: #f0ece3;
-    --accent: #c8b47a;
-    --muted: #444;
-    --dim: #888;
-  }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  html, body {
-    height: 100%;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    overflow: hidden;
-  }
+    :root {
+      --bg: #faf7f2;
+      --cream: #f2ede4;
+      --brown: #3b2a1a;
+      --brown-light: #7a5c3e;
+      --green: #2d6a4f;
+      --green-light: #e8f5ee;
+      --red-soft: #c0392b;
+      --red-bg: #fdf1f0;
+      --text: #2c1f0f;
+      --muted: #9c8470;
+      --border: #e0d5c5;
+      --serif: 'DM Serif Display', Georgia, serif;
+      --sans: 'DM Sans', sans-serif;
+    }
 
-  #display {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px;
-    position: relative;
-    transition: opacity 0.6s ease;
-  }
+    html, body {
+      height: 100%;
+      width: 100%;
+      background: var(--bg);
+      font-family: var(--sans);
+      color: var(--text);
+      overflow: hidden;
+    }
 
-  /* Subtle grid background */
-  #display::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(var(--muted) 1px, transparent 1px),
-      linear-gradient(90deg, var(--muted) 1px, transparent 1px);
-    background-size: 60px 60px;
-    opacity: 0.06;
-    pointer-events: none;
-  }
+    /* ── IDLE SCREEN ─────────────────────────────── */
+    #idle-screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      transition: opacity 0.5s ease;
+    }
 
-  #idle-state {
-    text-align: center;
-    opacity: 0.25;
-  }
+    .idle-dot-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
 
-  #idle-state .idle-icon {
-    font-size: 48px;
-    margin-bottom: 20px;
-    filter: grayscale(1);
-  }
+    .idle-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+      animation: idlePulse 2.4s ease-in-out infinite;
+    }
+    .idle-dot:nth-child(2) { animation-delay: 0.3s; }
+    .idle-dot:nth-child(3) { animation-delay: 0.6s; }
 
-  #idle-state p {
-    font-size: 13px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--dim);
-  }
+    @keyframes idlePulse {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.3); }
+    }
 
-  #message-state {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    width: 100%;
-    max-width: 900px;
-    gap: 48px;
-  }
+    .idle-text {
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
 
-  #message-text {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(28px, 5vw, 64px);
-    line-height: 1.35;
-    color: var(--text);
-    letter-spacing: -0.01em;
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
-  }
+    /* ── SHARED SCREEN STYLES ────────────────────── */
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 40px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+      text-align: center;
+    }
 
-  #message-text.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+    .screen.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
 
-  #timer-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    opacity: 0;
-    transition: opacity 0.5s ease 0.3s;
-  }
+    /* ── SCREEN 1 — ORDER READY ──────────────────── */
+    #screen1 {
+      background: var(--bg);
+    }
 
-  #timer-wrap.visible { opacity: 1; }
+    .order-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+      animation: iconBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      animation-play-state: paused;
+    }
 
-  #timer-bar-track {
-    width: 240px;
-    height: 2px;
-    background: var(--muted);
-    border-radius: 2px;
-    overflow: hidden;
-  }
+    #screen1.visible .order-icon {
+      animation-play-state: running;
+    }
 
-  #timer-bar {
-    height: 100%;
-    background: var(--accent);
-    width: 100%;
-    transform-origin: left;
-    transition: transform linear;
-  }
+    @keyframes iconBounce {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
 
-  #timer-label {
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--dim);
-  }
+    .order-headline {
+      font-family: var(--serif);
+      font-size: clamp(36px, 7vw, 58px);
+      color: var(--brown);
+      line-height: 1.1;
+      margin-bottom: 12px;
+      animation: fadeUp 0.5s 0.15s ease both;
+      animation-play-state: paused;
+    }
 
-  /* Corner status dot */
-  #status-dot {
-    position: fixed;
-    top: 20px;
-    right: 24px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--dim);
-  }
+    #screen1.visible .order-headline { animation-play-state: running; }
 
-  #dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--muted);
-    transition: background 0.4s;
-  }
+    .order-sub {
+      font-size: 16px;
+      color: var(--muted);
+      font-weight: 300;
+      margin-bottom: 56px;
+      animation: fadeUp 0.5s 0.25s ease both;
+      animation-play-state: paused;
+    }
 
-  #dot.live { background: #5cba78; box-shadow: 0 0 6px #5cba7888; }
-  #dot.active { background: var(--accent); box-shadow: 0 0 8px #c8b47a66; animation: pulse 1.2s infinite; }
+    #screen1.visible .order-sub { animation-play-state: running; }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-</style>
+    .divider-line {
+      width: 48px;
+      height: 1px;
+      background: var(--border);
+      margin: 0 auto 48px;
+      animation: fadeUp 0.5s 0.3s ease both;
+      animation-play-state: paused;
+    }
+
+    #screen1.visible .divider-line { animation-play-state: running; }
+
+    .complaint-btn {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 400;
+      padding: 14px 28px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      animation: fadeUp 0.5s 0.4s ease both;
+      animation-play-state: paused;
+    }
+
+    #screen1.visible .complaint-btn { animation-play-state: running; }
+
+    .complaint-btn:hover {
+      border-color: var(--red-soft);
+      color: var(--red-soft);
+      background: var(--red-bg);
+    }
+
+    .complaint-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* ── SCREEN 2 — APOLOGY ──────────────────────── */
+    #screen2 {
+      background: #f7f4ef;
+    }
+
+    .apology-icon {
+      font-size: 52px;
+      margin-bottom: 28px;
+      animation: iconBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      animation-play-state: paused;
+    }
+
+    #screen2.visible .apology-icon { animation-play-state: running; }
+
+    .apology-headline {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: clamp(28px, 5.5vw, 46px);
+      color: var(--brown);
+      line-height: 1.15;
+      margin-bottom: 28px;
+      animation: fadeUp 0.5s 0.1s ease both;
+      animation-play-state: paused;
+    }
+
+    #screen2.visible .apology-headline { animation-play-state: running; }
+
+    .apology-body {
+      font-size: 18px;
+      color: var(--brown-light);
+      font-weight: 300;
+      line-height: 1.8;
+      max-width: 380px;
+      animation: fadeUp 0.5s 0.22s ease both;
+      animation-play-state: paused;
+    }
+
+    #screen2.visible .apology-body { animation-play-state: running; }
+
+    .apology-body strong {
+      font-weight: 500;
+      color: var(--brown);
+    }
+
+    .apology-rule {
+      width: 40px;
+      height: 2px;
+      background: var(--brown-light);
+      opacity: 0.25;
+      margin: 32px auto 0;
+      border-radius: 2px;
+      animation: fadeUp 0.5s 0.35s ease both;
+      animation-play-state: paused;
+    }
+
+    #screen2.visible .apology-rule { animation-play-state: running; }
+
+    /* ── SHARED ANIMATION ────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+  </style>
 </head>
 <body>
 
-<div id="display">
-  <div id="idle-state">
-    <div class="idle-icon">◎</div>
-    <p>Awaiting message</p>
-  </div>
-
-  <div id="message-state">
-    <div id="message-text"></div>
-    <div id="timer-wrap">
-      <div id="timer-bar-track"><div id="timer-bar"></div></div>
-      <div id="timer-label" id="timer-label">—</div>
+  <!-- Idle -->
+  <div id="idle-screen">
+    <div class="idle-dot-row">
+      <div class="idle-dot"></div>
+      <div class="idle-dot"></div>
+      <div class="idle-dot"></div>
     </div>
+    <p class="idle-text">Waiting...</p>
   </div>
-</div>
 
-<div id="status-dot">
-  <div id="dot"></div>
-  <span id="status-text">connecting</span>
-</div>
+  <!-- Screen 1: Order Ready -->
+  <div class="screen" id="screen1">
+    <div class="order-icon">☕</div>
+    <h1 class="order-headline">Your Order<br>is Here</h1>
+    <p class="order-sub">Enjoy!</p>
+    <div class="divider-line"></div>
+    <button class="complaint-btn" onclick="reportMissedOrder()">
+      Didn't receive your order? Press here.
+    </button>
+  </div>
 
-<!-- Firebase -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-  
-  const app = initializeApp({
-    apiKey: "AIzaSyDh0Azzq5cCUJIREWGn8Uky0wpjAn_hF4Y",
-    authDomain: "temi-tablet-display.firebaseapp.com",
-    projectId: "temi-tablet-display",
-    storageBucket: "temi-tablet-display.firebasestorage.app",
-    messagingSenderId: "200677882490",
-    appId: "1:200677882490:web:e08c52af15ced7ec64d9c3",
-    measurementId: "G-YVJTF25Z9P"
-  });
-  
-  const db = getDatabase(app);
+  <!-- Screen 2: Apology -->
+  <div class="screen" id="screen2">
+    <div class="apology-icon">🙏</div>
+    <h2 class="apology-headline">We are sorry<br>for the mistake.</h2>
+    <p class="apology-body">
+      Please sit tight —<br>
+      <strong>we will arrive with your drink shortly.</strong>
+    </p>
+    <div class="apology-rule"></div>
+  </div>
 
-  const dot = document.getElementById('dot');
-  const statusText = document.getElementById('status-text');
-  const idleState = document.getElementById('idle-state');
-  const messageState = document.getElementById('message-state');
-  const messageText = document.getElementById('message-text');
-  const timerBar = document.getElementById('timer-bar');
-  const timerLabel = document.getElementById('timer-label');
-  const timerWrap = document.getElementById('timer-wrap');
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  let clearTimer = null;
+    // ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────────────
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    // ─────────────────────────────────────────────────────────────────────
 
-  // load voices (needed on some Android devices)
-  window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const tabletRef = ref(db, 'tablet/currentScreen');
 
-  function speak(text) {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    const voices = window.speechSynthesis.getVoices();
-    const preferred = voices.find(v => v.name.includes('Google') && v.lang.startsWith('en'));
-    if (preferred) utterance.voice = preferred;
-    utterance.rate = 0.95;
-    utterance.pitch = 1;
-    utterance.volume = 1;
-    window.speechSynthesis.speak(utterance);
-  }
+    const allScreens = ['screen1', 'screen2'];
 
-  dot.classList.add('live');
-  statusText.textContent = 'live';
-
-  const msgRef = ref(db, 'currentMessage');
-  onValue(msgRef, (snapshot) => {
-    const data = snapshot.val();
-    if (!data || !data.message) {
-      showIdle();
-      return;
-    }
-    showMessage(data.message, data.duration, data.timestamp);
-  });
-
-  function showIdle() {
-    if (clearTimer) clearTimeout(clearTimer);
-    window.speechSynthesis.cancel(); // cancel TTS
-    messageState.style.display = 'none';
-    messageText.classList.remove('visible');
-    timerWrap.classList.remove('visible');
-    idleState.style.display = 'block';
-    dot.classList.remove('active');
-    dot.classList.add('live');
-    statusText.textContent = 'live';
-  }
-
-  function showMessage(text, duration, timestamp) {
-    if (clearTimer) clearTimeout(clearTimer);
-
-    idleState.style.display = 'none';
-    messageState.style.display = 'flex';
-    messageText.textContent = text;
-
-    speak(text); // call text to speech
-
-    dot.classList.remove('live');
-    dot.classList.add('active');
-    statusText.textContent = 'displaying';
-
-    // Animate in
-    requestAnimationFrame(() => {
-      messageText.classList.add('visible');
-      timerWrap.classList.add('visible');
-    });
-
-    if (duration && duration > 0) {
-      // Calculate remaining time based on server timestamp
-      const elapsed = timestamp ? (Date.now() - timestamp) / 1000 : 0;
-      const remaining = Math.max(0, duration - elapsed);
-
-      timerLabel.textContent = `${Math.ceil(remaining)}s remaining`;
-
-      timerBar.style.transition = 'none';
-      timerBar.style.transform = `scaleX(${remaining / duration})`;
-
-      requestAnimationFrame(() => {
-        timerBar.style.transition = `transform ${remaining}s linear`;
-        timerBar.style.transform = 'scaleX(0)';
+    function showScreen(name) {
+      const idle = document.getElementById('idle-screen');
+      allScreens.forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.remove('visible');
       });
 
-      let secondsLeft = Math.ceil(remaining);
-      const labelInterval = setInterval(() => {
-        secondsLeft--;
-        if (secondsLeft <= 0) {
-          clearInterval(labelInterval);
-          timerLabel.textContent = 'done';
-        } else {
-          timerLabel.textContent = `${secondsLeft}s remaining`;
+      if (!name) {
+        idle.style.opacity = '1';
+        idle.style.pointerEvents = 'all';
+      } else {
+        idle.style.opacity = '0';
+        idle.style.pointerEvents = 'none';
+        const target = document.getElementById(name);
+        if (target) {
+          // Small delay lets CSS reset animations before re-adding .visible
+          setTimeout(() => target.classList.add('visible'), 30);
         }
-      }, 1000);
-
-      clearTimer = setTimeout(() => {
-        clearInterval(labelInterval);
-        showIdle();
-      }, remaining * 1000);
-    } else {
-      timerWrap.style.display = 'none';
+      }
     }
-  }
-</script>
-</body onclick="document.documentElement.requestFullscreen()">
+
+    // Listen for researcher commands
+    onValue(tabletRef, (snap) => {
+      showScreen(snap.val());
+    });
+
+    // Complaint button: tablet pushes itself to screen2
+    window.reportMissedOrder = function() {
+      set(tabletRef, 'screen2');
+    };
+  </script>
+
+</body>
 </html>
