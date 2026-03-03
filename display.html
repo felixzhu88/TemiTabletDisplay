@@ -275,11 +275,10 @@
     <div class="apology-rule"></div>
   </div>
 
-  <!-- Firebase -->
+  <!-- Firebase config-->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
     const firebaseConfig = {
       apiKey: "AIzaSyDh0Azzq5cCUJIREWGn8Uky0wpjAn_hF4Y",
       authDomain: "temi-tablet-display.firebaseapp.com",
