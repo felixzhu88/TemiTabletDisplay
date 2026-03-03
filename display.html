@@ -280,17 +280,16 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    // ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────────────
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-    // ─────────────────────────────────────────────────────────────────────
+    const firebaseConfig = initializeApp({
+        apiKey: "AIzaSyDh0Azzq5cCUJIREWGn8Uky0wpjAn_hF4Y",
+        authDomain: "temi-tablet-display.firebaseapp.com",
+        databaseURL: "https://temi-tablet-display-default-rtdb.firebaseio.com/",
+        projectId: "temi-tablet-display",
+        storageBucket: "temi-tablet-display.firebasestorage.app",
+        messagingSenderId: "200677882490",
+        appId: "1:200677882490:web:e08c52af15ced7ec64d9c3",
+        measurementId: "G-YVJTF25Z9P"
+    });
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
