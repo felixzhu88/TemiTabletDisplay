@@ -14,11 +14,8 @@
       --cream: #f2ede4;
       --brown: #3b2a1a;
       --brown-light: #7a5c3e;
-      --green: #2d6a4f;
-      --green-light: #e8f5ee;
       --red-soft: #c0392b;
       --red-bg: #fdf1f0;
-      --text: #2c1f0f;
       --muted: #9c8470;
       --border: #e0d5c5;
       --serif: 'DM Serif Display', Georgia, serif;
@@ -30,11 +27,10 @@
       width: 100%;
       background: var(--bg);
       font-family: var(--sans);
-      color: var(--text);
       overflow: hidden;
     }
 
-    /* ── IDLE SCREEN ─────────────────────────────── */
+    /* ── IDLE ────────────────────────────────────── */
     #idle-screen {
       position: fixed;
       inset: 0;
@@ -46,15 +42,10 @@
       transition: opacity 0.5s ease;
     }
 
-    .idle-dot-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 28px;
-    }
+    .idle-dot-row { display: flex; gap: 10px; margin-bottom: 28px; }
 
     .idle-dot {
-      width: 8px;
-      height: 8px;
+      width: 8px; height: 8px;
       border-radius: 50%;
       background: var(--border);
       animation: idlePulse 2.4s ease-in-out infinite;
@@ -67,14 +58,9 @@
       50% { opacity: 1; transform: scale(1.3); }
     }
 
-    .idle-text {
-      font-family: var(--sans);
-      font-size: 14px;
-      color: var(--muted);
-      letter-spacing: 0.08em;
-    }
+    .idle-text { font-size: 14px; color: var(--muted); letter-spacing: 0.08em; }
 
-    /* ── SHARED SCREEN STYLES ────────────────────── */
+    /* ── SHARED SCREEN ───────────────────────────── */
     .screen {
       position: fixed;
       inset: 0;
@@ -89,15 +75,10 @@
       text-align: center;
     }
 
-    .screen.visible {
-      opacity: 1;
-      pointer-events: all;
-    }
+    .screen.visible { opacity: 1; pointer-events: all; }
 
     /* ── SCREEN 1 — ORDER READY ──────────────────── */
-    #screen1 {
-      background: var(--bg);
-    }
+    #screen1 { background: var(--bg); }
 
     .order-icon {
       font-size: 64px;
@@ -105,14 +86,11 @@
       animation: iconBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
       animation-play-state: paused;
     }
-
-    #screen1.visible .order-icon {
-      animation-play-state: running;
-    }
+    #screen1.visible .order-icon { animation-play-state: running; }
 
     @keyframes iconBounce {
       from { transform: scale(0.5); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+      to   { transform: scale(1);   opacity: 1; }
     }
 
     .order-headline {
@@ -124,7 +102,6 @@
       animation: fadeUp 0.5s 0.15s ease both;
       animation-play-state: paused;
     }
-
     #screen1.visible .order-headline { animation-play-state: running; }
 
     .order-sub {
@@ -135,18 +112,15 @@
       animation: fadeUp 0.5s 0.25s ease both;
       animation-play-state: paused;
     }
-
     #screen1.visible .order-sub { animation-play-state: running; }
 
     .divider-line {
-      width: 48px;
-      height: 1px;
+      width: 48px; height: 1px;
       background: var(--border);
       margin: 0 auto 48px;
       animation: fadeUp 0.5s 0.3s ease both;
       animation-play-state: paused;
     }
-
     #screen1.visible .divider-line { animation-play-state: running; }
 
     .complaint-btn {
@@ -163,23 +137,12 @@
       animation: fadeUp 0.5s 0.4s ease both;
       animation-play-state: paused;
     }
-
     #screen1.visible .complaint-btn { animation-play-state: running; }
-
-    .complaint-btn:hover {
-      border-color: var(--red-soft);
-      color: var(--red-soft);
-      background: var(--red-bg);
-    }
-
-    .complaint-btn:active {
-      transform: scale(0.97);
-    }
+    .complaint-btn:hover { border-color: var(--red-soft); color: var(--red-soft); background: var(--red-bg); }
+    .complaint-btn:active { transform: scale(0.97); }
 
     /* ── SCREEN 2 — APOLOGY ──────────────────────── */
-    #screen2 {
-      background: #f7f4ef;
-    }
+    #screen2 { background: #f7f4ef; }
 
     .apology-icon {
       font-size: 52px;
@@ -187,7 +150,6 @@
       animation: iconBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
       animation-play-state: paused;
     }
-
     #screen2.visible .apology-icon { animation-play-state: running; }
 
     .apology-headline {
@@ -200,7 +162,6 @@
       animation: fadeUp 0.5s 0.1s ease both;
       animation-play-state: paused;
     }
-
     #screen2.visible .apology-headline { animation-play-state: running; }
 
     .apology-body {
@@ -212,17 +173,11 @@
       animation: fadeUp 0.5s 0.22s ease both;
       animation-play-state: paused;
     }
-
     #screen2.visible .apology-body { animation-play-state: running; }
-
-    .apology-body strong {
-      font-weight: 500;
-      color: var(--brown);
-    }
+    .apology-body strong { font-weight: 500; color: var(--brown); }
 
     .apology-rule {
-      width: 40px;
-      height: 2px;
+      width: 40px; height: 2px;
       background: var(--brown-light);
       opacity: 0.25;
       margin: 32px auto 0;
@@ -230,15 +185,12 @@
       animation: fadeUp 0.5s 0.35s ease both;
       animation-play-state: paused;
     }
-
     #screen2.visible .apology-rule { animation-play-state: running; }
 
-    /* ── SHARED ANIMATION ────────────────────────── */
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
   </style>
 </head>
 <body>
@@ -275,10 +227,10 @@
     <div class="apology-rule"></div>
   </div>
 
-  <!-- Firebase config-->
+  <!-- Firebase compat SDKs — no imports, no type="module" -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-  <script type="module">
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDh0Azzq5cCUJIREWGn8Uky0wpjAn_hF4Y",
       authDomain: "temi-tablet-display.firebaseapp.com",
@@ -294,16 +246,11 @@
     const db = firebase.database();
     const tabletRef = db.ref('tablet/currentScreen');
 
-
     const allScreens = ['screen1', 'screen2'];
 
     function showScreen(name) {
       const idle = document.getElementById('idle-screen');
-      allScreens.forEach(id => {
-        const el = document.getElementById(id);
-        el.classList.remove('visible');
-      });
-
+      allScreens.forEach(id => document.getElementById(id).classList.remove('visible'));
       if (!name) {
         idle.style.opacity = '1';
         idle.style.pointerEvents = 'all';
@@ -311,22 +258,19 @@
         idle.style.opacity = '0';
         idle.style.pointerEvents = 'none';
         const target = document.getElementById(name);
-        if (target) {
-          // Small delay lets CSS reset animations before re-adding .visible
-          setTimeout(() => target.classList.add('visible'), 30);
-        }
+        if (target) setTimeout(() => target.classList.add('visible'), 30);
       }
     }
 
     // Listen for researcher commands
-    onValue(tabletRef, (snap) => {
+    tabletRef.on('value', (snap) => {
       showScreen(snap.val());
     });
 
-    // Complaint button: tablet pushes itself to screen2
-    window.reportMissedOrder = function() {
-      set(tabletRef, 'screen2');
-    };
+    // Complaint button — tablet writes screen2 to Firebase itself
+    function reportMissedOrder() {
+      tabletRef.set('screen2');
+    }
   </script>
 
 </body>
