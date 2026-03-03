@@ -289,7 +289,7 @@
         measurementId: "G-YVJTF25Z9P"
     });
 
-    const app = initializeApp(firebaseConfig);
+    const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const tabletRef = ref(db, 'tablet/currentScreen');
 
