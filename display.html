@@ -207,7 +207,6 @@
 
   <!-- Screen 1: Order Ready -->
   <div class="screen" id="screen1">
-    <div class="order-icon">🍵</div>
     <h1 class="order-headline">Your Order<br>is here!</h1>
     <p class="order-sub">Enjoy!</p>
     <div class="divider-line"></div>
@@ -221,8 +220,7 @@
     <div class="apology-icon">🙏</div>
     <h1 class="apology-headline">We are sorry<br>for the mistake.</h1>
     <h2 class="apology-body">
-      <strong>Please sit tight</strong>
-      <strong>we will arrive with your drink shortly.</strong>
+      <strong>Please sit tight! We will arrive with your drink shortly.</strong>
     </h2>
     <div class="apology-rule"></div>
   </div>
@@ -248,6 +246,7 @@
 
     const allScreens = ['screen1', 'screen2'];
 
+    // show screen + animation handling
     function showScreen(name) {
       const idle = document.getElementById('idle-screen');
       allScreens.forEach(id => document.getElementById(id).classList.remove('visible'));
@@ -258,7 +257,15 @@
         idle.style.opacity = '0';
         idle.style.pointerEvents = 'none';
         const target = document.getElementById(name);
-        if (target) setTimeout(() => target.classList.add('visible'), 30);
+        if (target) {
+          // Reset animations by cloning and replacing each animated child
+          target.querySelectorAll('[style*="animation"], [class]').forEach(el => {
+            el.style.animation = 'none';
+            el.offsetHeight; // force reflow
+            el.style.animation = '';
+          });
+          setTimeout(() => target.classList.add('visible'), 30);
+        }
       }
     }
 
