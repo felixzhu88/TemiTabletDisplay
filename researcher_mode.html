@@ -235,7 +235,7 @@
 <body>
 
   <header>
-    <div class="label">ONLY FOR RESEARCHER</div>
+    <div class="label">Research Study Interface</div>
     <h1>Researcher Control Panel</h1>
     <div class="status-bar">
       <div class="status-dot" id="statusDot"></div>
@@ -251,13 +251,19 @@
       <button class="screen-btn" id="btn-screen1" onclick="sendScreen('screen1')">
         <span class="btn-num">01 ——</span>
         <span class="btn-label">Order Ready</span>
-        <span class="btn-desc">"Order Ready Screen + Question"</span>
+        <span class="btn-desc">"Your Order is Here" + missed order button</span>
       </button>
 
       <button class="screen-btn" id="btn-screen2" onclick="sendScreen('screen2')">
         <span class="btn-num">02 ——</span>
         <span class="btn-label">Apology Screen</span>
-        <span class="btn-desc">"Apology + sit tight/drink on the way"</span>
+        <span class="btn-desc">"We're sorry — your drink is on its way"</span>
+      </button>
+
+      <button class="screen-btn" id="btn-screen3" onclick="sendScreen('screen3')">
+        <span class="btn-num">03 ——</span>
+        <span class="btn-label">QR Code to Survey</span>
+        <span class="btn-desc">Follow up questions — takes ~3 minutes</span>
       </button>
 
     </div>
@@ -274,7 +280,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <!-- Firebase compat SDKs (no imports needed, everything is on window.firebase) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script>
@@ -296,6 +301,7 @@
     const screenLabels = {
       screen1: 'Screen 1 — Order Ready',
       screen2: 'Screen 2 — Apology Screen',
+      screen3: 'Screen 3 — QR Code to Survey',
     };
 
     db.ref('.info/connected').on('value', (snap) => {
